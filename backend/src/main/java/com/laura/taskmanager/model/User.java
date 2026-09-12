@@ -7,10 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import jakarta.persistence.Table;
 
 @Entity
 @Getter
 @Setter
+@Table(name = "users")
 public class User {
 
     @Id
