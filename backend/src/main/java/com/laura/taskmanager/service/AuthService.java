@@ -1,16 +1,17 @@
 package com.laura.taskmanager.service;
 
-import org.springframework.stereotype.Service;
-
-import com.laura.taskmanager.dto.RegisterRequest;
-import com.laura.taskmanager.dto.UserResponse;
-import com.laura.taskmanager.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import com.laura.taskmanager.model.User;
-import com.laura.taskmanager.exception.EmailAlreadyRegisteredException;
-import com.laura.taskmanager.dto.LoginRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.laura.taskmanager.dto.LoginRequest;
+import com.laura.taskmanager.dto.RegisterRequest;
+import com.laura.taskmanager.dto.UserResponse;
+import com.laura.taskmanager.exception.EmailAlreadyRegisteredException;
+import com.laura.taskmanager.model.User;
+import com.laura.taskmanager.repository.UserRepository;
+import com.laura.taskmanager.security.JwtService;
 
 @Service
 public class AuthService {
@@ -18,15 +19,18 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager) {
+            AuthenticationManager authenticationManager,
+            JwtService jwtService) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     public UserResponse register(RegisterRequest request) {
@@ -45,10 +49,12 @@ public class AuthService {
         return response;
     }
 
-    public void login(LoginRequest request) {
+    public String login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()));
+
+        return jwtService.generateToken(request.getEmail());
     }
 }
