@@ -7,6 +7,7 @@ import com.laura.taskmanager.dto.UserResponse;
 import com.laura.taskmanager.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.laura.taskmanager.model.User;
+import com.laura.taskmanager.exception.EmailAlreadyRegisteredException;
 
 @Service
 public class AuthService {
@@ -21,7 +22,7 @@ public class AuthService {
 
     public UserResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered");
+            throw new EmailAlreadyRegisteredException("Email already registered");
         }
 
         User user = new User();
