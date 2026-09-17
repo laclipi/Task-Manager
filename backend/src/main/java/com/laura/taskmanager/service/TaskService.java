@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.laura.taskmanager.dto.TaskRequest;
+import com.laura.taskmanager.dto.TaskResponse;
 import com.laura.taskmanager.model.Task;
 import com.laura.taskmanager.model.User;
 import com.laura.taskmanager.repository.TaskRepository;
@@ -22,11 +24,41 @@ public class TaskService {
         this.userRepository = userRepository;
     }
 
-    public List<Task> getTasks(String email) {
+    public List<TaskResponse> getTasks(String email) {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return taskRepository.findByOwnerId(user.getId());
+        List<Task> tasks = taskRepository.findByOwnerId(user.getId());
+
+        List<TaskResponse> responses = new java.util.ArrayList<>();
+
+        for (Task task : tasks) {
+            TaskResponse response = new TaskResponse();
+            response.setId(task.getId());
+            response.setTitle(task.getTitle());
+
+            responses.add(response);
+        }
+
+        return responses;
+    }
+
+    public TaskResponse createTask(String email, TaskRequest request) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Task task = new Task();
+        task.setTitle(request.getTitle());
+        task.setOwner(user);
+
+        taskRepository.save(task);
+
+        TaskResponse response = new TaskResponse();
+        response.setId(task.getId());
+        response.setTitle(task.getTitle());
+
+        return response;
     }
 }
