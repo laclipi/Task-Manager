@@ -16,6 +16,8 @@ import com.laura.taskmanager.repository.UserRepository;
 import com.laura.taskmanager.security.CustomUserDetailsService;
 import com.laura.taskmanager.security.JwtAuthFilter;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @Configuration
 public class SecurityConfig {
 
@@ -54,7 +56,11 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/error").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        }));
 
         return http.build();
     }
