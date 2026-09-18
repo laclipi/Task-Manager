@@ -5,13 +5,14 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.laura.taskmanager.dto.TaskRequest;
 import com.laura.taskmanager.dto.TaskResponse;
-import com.laura.taskmanager.model.Task;
 import com.laura.taskmanager.service.TaskService;
 
 import jakarta.validation.Valid;
@@ -31,6 +32,27 @@ public class TaskController {
         String email = authentication.getName();
 
         return taskService.getTasks(email);
+    }
+
+    @GetMapping("/tasks/{id}")
+    public TaskResponse getTask(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+
+        return taskService.getTask(email, id);
+    }
+
+    @PutMapping("/tasks/{id}")
+    public TaskResponse updateTask(
+            @PathVariable Long id,
+            @Valid @RequestBody TaskRequest request,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+
+        return taskService.updateTask(email, id, request);
     }
 
     @PostMapping("/tasks")

@@ -2,7 +2,9 @@ package com.laura.taskmanager.service;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.laura.taskmanager.dto.TaskRequest;
 import com.laura.taskmanager.dto.TaskResponse;
@@ -42,6 +44,47 @@ public class TaskService {
         }
 
         return responses;
+    }
+
+    public TaskResponse getTask(String email, Long taskId) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Task task = taskRepository.findByIdAndOwnerId(taskId, user.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Task not found"));
+
+        TaskResponse response = new TaskResponse();
+        response.setId(task.getId());
+        response.setTitle(task.getTitle());
+
+        return response;
+    }
+
+    public TaskResponse updateTask(
+            String email,
+            Long taskId,
+            TaskRequest request) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Task task = taskRepository.findByIdAndOwnerId(taskId, user.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Task not found"));
+
+        task.setTitle(request.getTitle());
+
+        taskRepository.save(task);
+
+        TaskResponse response = new TaskResponse();
+        response.setId(task.getId());
+        response.setTitle(task.getTitle());
+
+        return response;
     }
 
     public TaskResponse createTask(String email, TaskRequest request) {
