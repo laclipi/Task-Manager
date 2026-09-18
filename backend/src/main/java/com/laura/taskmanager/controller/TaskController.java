@@ -16,6 +16,7 @@ import com.laura.taskmanager.dto.TaskResponse;
 import com.laura.taskmanager.service.TaskService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 @RestController
 public class TaskController {
@@ -53,6 +54,18 @@ public class TaskController {
         String email = authentication.getName();
 
         return taskService.updateTask(email, id, request);
+    }
+
+    @DeleteMapping("/tasks/{id}")
+    public ResponseEntity<Void> deleteTask(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+
+        taskService.deleteTask(email, id);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/tasks")

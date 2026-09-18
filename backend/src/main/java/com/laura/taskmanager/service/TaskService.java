@@ -87,6 +87,19 @@ public class TaskService {
         return response;
     }
 
+    public void deleteTask(String email, Long taskId) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Task task = taskRepository.findByIdAndOwnerId(taskId, user.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Task not found"));
+
+        taskRepository.delete(task);
+    }
+
     public TaskResponse createTask(String email, TaskRequest request) {
 
         User user = userRepository.findByEmail(email)
