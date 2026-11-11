@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 
 import { createTask, getTasks } from "../services/taskService";
 
+interface Task {
+  id: number;
+  title: string;
+}
+
 function TasksPage() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
 
   useEffect(() => {
